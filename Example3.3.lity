@@ -1,0 +1,61 @@
+pragma  lity^1.2.7;
+
+contract Lottery {
+	struct V{
+		uint g;
+		bool w;
+		address payable s;
+	}
+
+	struct T {
+		uint t;
+	}
+
+	struct O {
+		address payable o;
+	}
+
+	T public tot;
+	O public owner;
+	V[] values;
+
+	constructor() public{
+		owner.o = msg.sender;
+		tot.t = 0;
+
+		factInsert owner;
+		factInsert tot;
+	}
+
+	function addGuess(uint guess) external payable{
+		require(msg.value == 2 ether, "Registration costs 2 ETH!");
+
+		tot.t += 2;
+		values.push(V(guess, false, msg.sender));
+		factInsert values[values.length-1];
+	}
+
+	function getParticipant(uint index) public view returns(address, uint, bool){
+		return (values[index].s, values[index].g, values[index].w);
+	}
+
+	function getParticipants() public view returns(uint){
+		return values.length;
+	}
+
+	function decideWinners() public payable {
+		require(msg.sender == owner.o, "Only the owner can start the lottery");
+		require(msg.value == 1 ether * (tot.t/2), "Not enough ETH to start this function!");
+
+		fireAllRules;
+	}
+
+	rule "winner" when {
+		p: V(g == 7);
+		b: T(t >= 3);
+	} then {
+		p.w = true;
+		p.s.transfer(3 ether);
+		b.t -= 3;
+	}
+}
